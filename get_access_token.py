@@ -9,3 +9,9 @@ def get_access_token():
         None
     else: raise Exception('Error with authorization')
     return get_auth.json()['access_token']
+
+    
+if __name__ == '__main__':
+    access_token =get_access_token()
+    print(access_token)
+    
