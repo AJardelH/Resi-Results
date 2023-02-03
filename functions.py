@@ -58,7 +58,29 @@ def get_sales_temp():
         df.insert(0,'auctiondate', auction_date)
         #print(type(auction_date))
         settings = config()
-        df.to_sql('temptable', con=engine, if_exists='append', index=False)
+        df.to_sql('temptable', engine, if_exists='append', index=False,
+            dtype={'auctiondate':db.types.DATE(),
+                'id':db.types.Integer(),
+                'propertydetailsurl':db.types.Text(),
+                'price': db.types.Integer(),
+                'result':db.types.Text(),
+                'unitnumber':db.types.Text(),
+                'streetnumber':db.types.Text(),
+                'streetname':db.types.Text(),
+                'streettype':db.types.Text(),
+                'suburb':db.types.Text(),
+                'postcode':db.types.Integer(),
+                'state':db.types.Text(),
+                'propertytype':db.types.Text(),
+                'bedrooms':db.types.Integer(),
+                'bathrooms':db.types.Integer(),
+                'carspaces':db.types.Integer(),
+                'agencyname':db.types.Text(),
+                'agent':db.types.Text(),
+                'agencyprofilepageurl':db.types.Text(),
+                'latitude':db.types.Numeric(),
+                'longitude':db.types.Numeric()}
+        )
         print(df)
         conn = None
         try: 
@@ -67,7 +89,7 @@ def get_sales_temp():
             conn.close()
             index = df.index
             number_of_rows = len(index)
-            print(f'{number_of_rows} temp records inserted for {cities} to {conn}')
+            print(f'{number_of_rows} records inserted for {cities} inserted into temp table')
         except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
         finally:
@@ -81,21 +103,21 @@ def temp_table_to_perm():
         CREATE TABLE if not exists auctionresults (
         auctiondate DATE NOT NULL,
         id INTEGER NOT NULL,
-        propertyDetailsUrl TEXT NOT NULL,
-        price TEXT,
+        propertydetailsurl TEXT NOT NULL,
+        price INTEGER,
         result TEXT,
         unitnumber TEXT,
         streetnumber TEXT,
         streetname TEXT,
         streettype TEXT,
         suburb TEXT,
-        postcode TEXT,
+        postcode INTEGER,
         state TEXT,
         propertytype TEXT,
-        bedrooms TEXT,
-        bathrooms TEXT,
-        carspaces TEXT,  
-        agencyname TEXT,
+        bedrooms INTEGER,
+        bathrooms INTEGER,
+        carspaces INTEGER,  
+        agencyname INTEGER,
         agent TEXT,
         agencyprofilepageurl TEXT,
         latitude NUMERIC, 
@@ -107,20 +129,20 @@ def temp_table_to_perm():
         CREATE TABLE if not exists temptable (
         auctiondate DATE NOT NULL,
         id INTEGER NOT NULL,
-        propertyDetailsUrl TEXT NOT NULL,
-        price TEXT,
+        propertydetailsurl TEXT NOT NULL,
+        price INTEGER,
         result TEXT,
         unitnumber TEXT,
         streetnumber TEXT,
         streetname TEXT,
         streettype TEXT,
         suburb TEXT,
-        postcode TEXT,
+        postcode INTEGER,
         state TEXT,
         propertytype TEXT,
-        bedrooms TEXT,
-        bathrooms TEXT,
-        carspaces TEXT,  
+        bedrooms INTEGER,
+        bathrooms INTEGER,
+        carspaces INTEGER,  
         agencyname TEXT,
         agent TEXT,
         agencyprofilepageurl TEXT,
@@ -130,16 +152,54 @@ def temp_table_to_perm():
         '''
         ,
         '''
-        INSERT INTO auctionresults(auctiondate, id, propertydetailsurl, price, 
-        result, unitnumber, streetnumber, streetname, streettype, suburb, postcode, state, propertytype,
-        bedrooms, bathrooms, carspaces, agencyname, agent, agencyprofilepageurl, latitude, longitude)
+        INSERT INTO auctionresults(
+        auctiondate,
+        id,
+        postcode,
+        propertydetailsurl,
+        price, 
+        result,
+        unitnumber,
+        streetnumber,
+        streetname,
+        streettype,
+        suburb,
+        state,
+        propertytype,
+        bedrooms,
+        bathrooms,
+        carspaces,
+        agencyname,
+        agent,
+        agencyprofilepageurl,
+        latitude,
+        longitude
+        )
         SELECT 
-        auctiondate, id, propertydetailsurl, price, 
-        result, unitnumber, streetnumber, streetname, streettype, suburb, postcode, state, propertytype,
-        bedrooms, bathrooms, carspaces, agencyname, agent, agencyprofilepageurl, 
-        latitude, longitude FROM temptable
+        auctiondate,
+        id,
+        postcode,
+        propertydetailsurl,
+        price,
+        result,
+        unitnumber,
+        streetnumber,
+        streetname,
+        streettype,
+        suburb,
+        state,
+        propertytype,
+        bedrooms,
+        bathrooms,
+        carspaces,
+        agencyname,
+        agent,
+        agencyprofilepageurl, 
+        latitude, 
+        longitude
+        FROM temptable
         WHERE NOT EXISTS (
-            SELECT id
+            SELECT *
             FROM auctionresults
             WHERE auctionresults.id = temptable.id
             AND auctionresults.auctiondate = temptable.auctiondate

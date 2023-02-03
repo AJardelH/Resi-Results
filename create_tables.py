@@ -9,26 +9,24 @@ def create_tables():
             auctiondate DATE NOT NULL,
             id INTEGER NOT NULL,
             propertydetailsurl TEXT NOT NULL,
-            price TEXT,
+            price INTEGER,
             result TEXT,
             unitnumber TEXT,
             streetnumber TEXT,
             streetname TEXT,
             streettype TEXT,
             suburb TEXT,
-            postcode TEXT,
+            postcode INTEGER,
             state TEXT,
             propertytype TEXT,
-            bedrooms TEXT,
-            bathrooms TEXT,
-            carspaces TEXT,  
-            agencyid INT,
+            bedrooms INTEGER,
+            bathrooms INTEGER,
+            carspaces INTEGER,  
             agencyname TEXT,
             agent TEXT,
-            agencyprofilepageUrl TEXT,
+            agencyprofilepageurl TEXT,
             latitude NUMERIC, 
             longitude NUMERIC
-            
             )
         ''',
         '''
@@ -36,23 +34,22 @@ def create_tables():
             auctiondate DATE NOT NULL,
             id INTEGER NOT NULL,
             propertydetailsurl TEXT NOT NULL,
-            price TEXT,
+            price INTEGER,
             result TEXT,
             unitnumber TEXT,
             streetnumber TEXT,
             streetname TEXT,
             streettype TEXT,
             suburb TEXT,
-            postcode TEXT,
+            postcode INTEGER,
             state TEXT,
             propertytype TEXT,
-            bedrooms TEXT,
-            bathrooms TEXT,
-            carspaces TEXT,  
-            agencyid TEXT,
+            bedrooms INTEGER,
+            bathrooms INTEGER,
+            carspaces INTEGER,  
             agencyname TEXT,
             agent TEXT,
-            agencyprofilepageUrl TEXT,
+            agencyprofilepageurl TEXT,
             latitude NUMERIC, 
             longitude NUMERIC
             )
@@ -77,5 +74,5 @@ def create_tables():
         if conn is not None:
                 conn.close()
 
-#if __name__ == '__main__':
-    #create_tables()
+if __name__ == '__main__':
+    create_tables()
