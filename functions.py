@@ -7,7 +7,8 @@ from sqlalchemy import create_engine
 from config import authorization
 from config import config
 
-
+#Get access token from Domain Website API using client ID & secret from config file. 
+#https://developer.domain.com.au/docs/latest/authentication/oauth
 def get_access_token():
     auth_params = authorization()
     auth_url = 'https://auth.domain.com.au/v1/connect/token'
@@ -17,6 +18,8 @@ def get_access_token():
     else: raise Exception('Error with authorization')
     return get_auth.json()['access_token']
 
+#Get current metadata for sales result data, interested in the auction date. 
+#https://developer.domain.com.au/docs/latest/apis/pkg_properties_locations/references/salesresults_head
 def get_auction_date():
     access_token = get_access_token()
     auth_headers = {'Authorization':'Bearer ' +access_token,
@@ -32,10 +35,18 @@ def get_auction_date():
     auction_date = date.fromisoformat(string_date)
     return auction_date
 
+#Create SQL engine for amazon rds db from config
 def create_engine_from_settings():
     settings = config()
     engine = create_engine('postgresql://{user}:{password}@{host}:{port}/{database}'.format(**settings))
     return engine
+
+#Need to itereate through cities as API only allows one city per call. 
+#depending on data input by Domain some id's are Null. Removed these as they caused duplicates in testing
+#strip the geoLocation tag off the longitude and latitude values for simplicity
+#manually assign dtype for to_sql as was causing type errors during testing
+#insert parsed dataframe into temp table
+#https://developer.domain.com.au/docs/latest/apis/pkg_properties_locations/references/salesresults_listings
 
 def get_sales_temp():
     cities_list = ['Melbourne','Sydney','Canberra','Brisbane','Adelaide']
@@ -81,7 +92,7 @@ def get_sales_temp():
                 'latitude':db.types.Numeric(),
                 'longitude':db.types.Numeric()}
         )
-        print(df)
+        #print(df)
         conn = None
         try: 
             conn = psycopg2.connect(**settings)
@@ -96,6 +107,7 @@ def get_sales_temp():
             if conn is not None:
                     conn.close()   
 
+#Copy temp table to permanent table where criteria are not duplicates
 def temp_table_to_perm():
     settings = config()
     sqls = (
@@ -220,4 +232,3 @@ def temp_table_to_perm():
         finally:
             if conn is not None:
                 conn.close()
-
