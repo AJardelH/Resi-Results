@@ -11,90 +11,109 @@ from config import config
 def get_access_token():
     auth_params = authorization()
     auth_url = 'https://auth.domain.com.au/v1/connect/token'
-    get_auth = requests.post(auth_url, data = {**auth_params})
+    get_auth = requests.post(auth_url, data={**auth_params})
     if get_auth.ok:
         None
-    else: raise Exception('Error with authorization')
+    else:
+        raise Exception('Error with authorization')
     return get_auth.json()['access_token']
+
 
 def get_auction_date():
     access_token = get_access_token()
-    auth_headers = {'Authorization':'Bearer ' +access_token,
-            'scope':'api_salesresults_read'
-            }
+    auth_headers = {'Authorization': 'Bearer ' + access_token,
+                    'scope': 'api_salesresults_read'}
     date_url = 'https://api.domain.com.au/v1/salesResults/_head'
-    date_req = requests.get(date_url, headers= auth_headers)
+    date_req = requests.get(date_url, headers=auth_headers)
     if date_req.ok:
         None
-    else: raise Exception('Error with getting auction date')
+    else:
+        raise Exception('Error with getting auction date')
     date_response = date_req.json()
     string_date = date_response['auctionedDate']
     auction_date = date.fromisoformat(string_date)
     return auction_date
+
 
 def create_engine_from_settings():
     settings = config()
     engine = create_engine('postgresql://{user}:{password}@{host}:{port}/{database}'.format(**settings))
     return engine
 
+
+def get_max_id():
+    max_id_query = "SELECT MAX(id) FROM auctionresults;"
+    engine = create_engine_from_settings()
+    max_id = pd.read_sql(max_id_query, engine).iloc[0, 0]
+    return max_id
+
+
 def get_sales_temp():
+    max_id = get_max_id()
     cities_list = ['Melbourne','Sydney','Canberra','Brisbane','Adelaide']
-    for i in cities_list:
-        cities = i
+    for city in cities_list:
         engine = create_engine_from_settings()
         auction_date = get_auction_date()
         access_token = get_access_token()
-        auth_headers = {'Authorization':'Bearer ' +access_token,
-                'scope':'api_salesresults_read'
-                }
-        end_url = f'https://api.domain.com.au/v1/salesResults/{cities}/listings'
-        r = requests.get(end_url, headers= auth_headers)  
+        auth_headers = {'Authorization': 'Bearer ' + access_token,
+                        'scope': 'api_salesresults_read'}
+        end_url = f'https://api.domain.com.au/v1/salesResults/{city}/listings'
+        r = requests.get(end_url, headers=auth_headers)
         sales_response = r.json()
         df = pd.json_normalize(sales_response)
-        df = df[df.id != 0]
-        df.columns = df.columns.str.replace('geoLocation.','', regex=False)
+        df = df.rename(columns={'id': 'propertyid'})
+        df = df.dropna(subset=['propertyid']) 
+        df['id'] = range(max_id + 1, max_id + 1 + len(df))
+        df.set_index('id', inplace=True)
+        df.columns = df.columns.str.replace('geoLocation.', '', regex=False)
         df = df.drop(columns='agencyId')
         df.columns = df.columns.str.lower()
-        df.insert(0,'auctiondate', auction_date)
-        #print(type(auction_date))
+        df.insert(0, 'auctiondate', auction_date)
+
+        duplicates = df[df.duplicated(subset=['propertyid', 'auctiondate'], keep=False)]
+        if not duplicates.empty:
+            print(f"Duplicate entries found for {city}. Ignoring {len(duplicates)} duplicate(s).")
+            df = df.drop_duplicates(subset=['propertyid', 'auctiondate'], keep=False)
+
         settings = config()
-        df.to_sql('temptable', engine, if_exists='append', index=False,
-            dtype={'auctiondate':db.types.DATE(),
-                'id':db.types.Integer(),
-                'propertydetailsurl':db.types.Text(),
-                'price': db.types.Integer(),
-                'result':db.types.Text(),
-                'unitnumber':db.types.Text(),
-                'streetnumber':db.types.Text(),
-                'streetname':db.types.Text(),
-                'streettype':db.types.Text(),
-                'suburb':db.types.Text(),
-                'postcode':db.types.Integer(),
-                'state':db.types.Text(),
-                'propertytype':db.types.Text(),
-                'bedrooms':db.types.Integer(),
-                'bathrooms':db.types.Integer(),
-                'carspaces':db.types.Integer(),
-                'agencyname':db.types.Text(),
-                'agent':db.types.Text(),
-                'agencyprofilepageurl':db.types.Text(),
-                'latitude':db.types.Numeric(),
-                'longitude':db.types.Numeric()}
-        )
-        print(df)
+        df.to_sql('temptable', engine, if_exists='append', index=True,
+                  dtype={'auctiondate': db.types.DATE(),
+                         'propertyid': db.types.Integer(),
+                         'propertydetailsurl': db.types.Text(),
+                         'price': db.types.Integer(),
+                         'result': db.types.Text(),
+                         'unitnumber': db.types.Text(),
+                         'streetnumber': db.types.Text(),
+                         'streetname': db.types.Text(),
+                         'streettype': db.types.Text(),
+                         'suburb': db.types.Text(),
+                         'postcode': db.types.Integer(),
+                         'state': db.types.Text(),
+                         'propertytype': db.types.Text(),
+                         'bedrooms': db.types.Integer(),
+                         'bathrooms': db.types.Integer(),
+                         'carspaces': db.types.Integer(),
+                         'agencyname': db.types.Text(),
+                         'agent': db.types.Text(),
+                         'agencyprofilepageurl': db.types.Text(),
+                         'latitude': db.types.Numeric(),
+                         'longitude': db.types.Numeric()}
+                  )
+
         conn = None
-        try: 
+        try:
             conn = psycopg2.connect(**settings)
             conn.commit()
             conn.close()
             index = df.index
             number_of_rows = len(index)
-            print(f'{number_of_rows} records inserted for {cities} inserted into temp table')
+            print(f'{number_of_rows} records inserted for {city} inserted into temp table')
         except (Exception, psycopg2.DatabaseError) as error:
-                print(error)
+            print(error)
         finally:
             if conn is not None:
-                    conn.close()   
+                conn.close()
+
 
 def temp_table_to_perm():
     settings = config()
@@ -102,7 +121,7 @@ def temp_table_to_perm():
         '''
         CREATE TABLE if not exists auctionresults (
         auctiondate DATE NOT NULL,
-        id INTEGER NOT NULL,
+        propertyid INTEGER NOT NULL,
         propertydetailsurl TEXT NOT NULL,
         price INTEGER,
         result TEXT,
@@ -121,14 +140,15 @@ def temp_table_to_perm():
         agent TEXT,
         agencyprofilepageurl TEXT,
         latitude NUMERIC, 
-        longitude NUMERIC
+        longitude NUMERIC,
+        PRIMARY KEY (auctiondate, propertyid, result, price)
         )
         '''
         ,
         '''
         CREATE TABLE if not exists temptable (
         auctiondate DATE NOT NULL,
-        id INTEGER NOT NULL,
+        propertyid INTEGER NOT NULL,
         propertydetailsurl TEXT NOT NULL,
         price INTEGER,
         result TEXT,
@@ -154,7 +174,7 @@ def temp_table_to_perm():
         '''
         INSERT INTO auctionresults(
         auctiondate,
-        id,
+        propertyid,
         postcode,
         propertydetailsurl,
         price, 
@@ -177,7 +197,7 @@ def temp_table_to_perm():
         )
         SELECT 
         auctiondate,
-        id,
+        propertyid,
         postcode,
         propertydetailsurl,
         price,
@@ -201,7 +221,7 @@ def temp_table_to_perm():
         WHERE NOT EXISTS (
             SELECT *
             FROM auctionresults
-            WHERE auctionresults.id = temptable.id
+            WHERE auctionresults.propertyid = temptable.propertyid
             AND auctionresults.auctiondate = temptable.auctiondate
             );
         DROP TABLE temptable
@@ -222,7 +242,6 @@ def temp_table_to_perm():
                 conn.close()
 
 
-
 def lambda_handler(event, context):
-    get_sales_temp()
-    temp_table_to_perm()
+     get_sales_temp()
+     temp_table_to_perm()
