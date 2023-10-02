@@ -1,6 +1,7 @@
 # Domain-Api-Resi-Results
 
-##**As of August Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
+##Note 
+**As of August Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
 
 ##About:
 The basis of this project began in Febuary 2022 while looking to purchase a house and wanting to keep a track of sold prices of houses I had looked at without needing to go through the website search UI. The project evolved from just the properties I was personally interested in, to all sold listings for the available cities every week. 
