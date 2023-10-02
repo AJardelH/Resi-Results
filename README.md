@@ -15,6 +15,8 @@ Secondary: learning Python, SQL and AWS.
 ## Data Pipeline
 to do: put diagram in 
 
+
+## Example Visualisation:
 An example of the data visualisation below. Colour density indicating median Price, the number indicating number of sales within each Postcode.
 Note: The data gathered from Domain is not complete and there will be instances where the purchases has chosen to withhold the sale price which will result in a _null_ value for Price. The above visualisation is for demonstrative purposes and may differ from other sources. 
 ![Tableau_example](https://user-images.githubusercontent.com/113073854/206088732-b924e4b1-7cd4-4350-af72-eb5d15a2086e.PNG)
