@@ -1,7 +1,7 @@
 # Domain-Api-Resi-Results.
 
 ## Note 
-**As of August Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
+**As of August 2023 Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
 
 ## About:
 The basis of this project began in Febuary 2022 while looking to purchase a house and wanting to keep a track of sold prices of houses I had looked at without needing to go through the website search UI. The project evolved from just the properties I was personally interested in, to all sold listings for the available cities every week. 
@@ -13,6 +13,7 @@ Use the Domain API to get weekly auction results for the supported major cities 
 Secondary: learning Python, SQL and AWS.
 
 ## Data Pipeline
+Basic data pipeline
 ![Untitled Diagram drawio](https://github.com/AJardelH/Resi-Results/assets/113073854/35ba30af-f9fd-4169-9761-6d2596a6c032)
 
 
