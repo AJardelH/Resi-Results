@@ -13,7 +13,8 @@ Use the Domain API to get weekly auction results for the supported major cities 
 Secondary: learning Python, SQL and AWS.
 
 ## Data Pipeline
-to do: put diagram in 
+![Untitled Diagram drawio](https://github.com/AJardelH/Resi-Results/assets/113073854/35ba30af-f9fd-4169-9761-6d2596a6c032)
+
 
 
 ## Example Visualisation:
