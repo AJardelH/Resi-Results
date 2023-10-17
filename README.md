@@ -14,7 +14,9 @@ Secondary: learning Python, SQL and AWS.
 
 ## Data Pipeline
 Basic data pipeline
-![Untitled Diagram drawio](https://github.com/AJardelH/Resi-Results/assets/113073854/35ba30af-f9fd-4169-9761-6d2596a6c032)
+![Untitled Diagram drawio](https://github.com/AJardelH/Resi-Results/assets/113073854/00f7465b-f485-4c6a-b4f1-5bbbe109b193)
+
+
 
 
 
