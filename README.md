@@ -17,6 +17,11 @@ Basic data pipeline
 
 ![Untitled Diagram drawio](https://github.com/AJardelH/Resi-Results/assets/113073854/00f7465b-f485-4c6a-b4f1-5bbbe109b193)
 
+## Example Data
+
+![image](https://github.com/AJardelH/Resi-Results/assets/113073854/ee52ad27-7b96-4b5f-ab3f-62b9f5ea93dd)
+
+
 
 
 
