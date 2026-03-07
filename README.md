@@ -9,7 +9,7 @@
 - **AWS Lambda** – serverless execution of the data retrieval and processing script  
 - **AWS EventBridge** – scheduled trigger (cron) for automated execution  
 - **Amazon RDS (PostgreSQL)** – persistent database storage for retrieved results  
-- **REST API** – external Residential Energy Rating API integration  
+- **REST API** – external Domain Residential API integration  
 - **Requests (Python library)** – HTTP client for API communication  
 
 ## Version History
