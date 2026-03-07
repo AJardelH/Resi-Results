@@ -3,6 +3,31 @@
 ## Note 
 **As of August 2023 Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
 
+## Tech Stack
+
+- **Python**
+- **AWS Lambda** – serverless execution of the data retrieval and processing script  
+- **AWS EventBridge** – scheduled trigger (cron) for automated execution  
+- **Amazon RDS (PostgreSQL)** – persistent database storage for retrieved results  
+- **REST API** – external Residential Energy Rating API integration  
+- **Requests (Python library)** – HTTP client for API communication  
+
+## Version History
+
+### Version 1 – Local Prototype
+
+- Python script executed locally
+- Data retrieved from API and stored in a **SQLite database**
+- Used for initial development and validation of API connectivity and data structure
+
+### Version 2 – AWS Deployment (Current)
+
+- Refactored for **serverless deployment using AWS Lambda**
+- **EventBridge cron schedule** for automated execution
+- Data stored in **Amazon RDS PostgreSQL**
+- Fully hosted on AWS as an automated data ingestion pipeline
+
+
 ## About:
 The basis of this project began in Febuary 2022 while looking to purchase a house and wanting to keep a track of sold prices of houses I had looked at without needing to go through the website search UI. The project evolved from just the properties I was personally interested in, to all sold listings for the available cities every week. I was able to query areas I was interested in with criteria for bedrooms and bathrooms and get an idea of historical prices and what had sold in the area. This proved to be easier than using the typical search filters on real estate websites. 
 
