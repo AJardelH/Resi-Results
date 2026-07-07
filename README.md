@@ -1,8 +1,5 @@
 # Domain-Api-Resi-Results.
 
-## Note 
-**As of August 2023 Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
-
 ## Tech Stack
 
 - **Python**
@@ -63,4 +60,8 @@ Note: The data gathered from Domain is not complete and there will be instances 
 ![Tableau_example](https://user-images.githubusercontent.com/113073854/206088732-b924e4b1-7cd4-4350-af72-eb5d15a2086e.PNG)
 
 ![Tableau_example_2](https://user-images.githubusercontent.com/113073854/206089729-b35fb7f7-abd1-4916-ba3c-ff13256f3313.PNG)
+
+
+## Note 
+**As of August 2023 Domain has removed access to their free tier of APIs resulting in this project being on permanent hiatus.**
 
